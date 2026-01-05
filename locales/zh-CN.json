@@ -1,6 +1,7 @@
 {
   "Base Config": "基本配置",
   "Generate Video" : "AI视频",
+  "Generate Pic": "AI图片",
   "Mix Video": "混剪视频",
 
   "Language": "界面语言",
@@ -44,6 +45,11 @@
   "Video content keyword" : "视频文案关键词(英文)",
   "Video content language": "视频文案语言",
   "Video length": "视频时长",
+
+  "Pic content" : "图片文案",
+  "Pic content keyword" : "图片文案关键词(英文)",
+  "Pic content language": "图片文案语言",
+  "Pic length": "图片描述长度",
 
   "Video Source": "视频素材来源",
   "Using Resource:": "使用源:",

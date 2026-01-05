@@ -54,6 +54,7 @@ def download_video(video_url, save_path):
     else:
         print(f"Failed to download video: {response.status_code}")
 
+
 def download_image(image_url, save_path):
     response = requests.get(image_url, stream=True)
     if response.status_code == 200:
@@ -161,60 +162,36 @@ class PixabayService(ResourceService):
         else:
             print("No videos found.")
         return return_videos, total_length
-    
-    def search_images(self, query, width, height, per_page=3, image_type='photo', orientation='vertical'):
+
+    def search_images(self, query, width, height, per_page=1, image_type='photo', orientation='vertical'):
         """搜索图片"""
-        # 修正 per_page 参数，Pixabay API 的 per_page 最大值是200，最小值是3
-        if per_page < 3:
-            per_page = 3
-        elif per_page > 200:
-            per_page = 200
-            
-        # Pixabay API 图片搜索的正确URL格式
         url = f'https://pixabay.com/api/?key={self.API_KEY}&q={quote_plus(query)}&image_type={image_type}&orientation={orientation}&min_width={width}&min_height={height}&per_page={per_page}'
-        print(f"Image search URL: {url}")  # 调试信息
         response = requests.get(url)
-        print(f"Response status code: {response.status_code}")  # 调试信息
-        print(f"Response text: {response.text[:500]}...")  # 调试信息，只显示前500个字符
         if response.status_code == 200:
-            data = response.json()
-            print(f"Image search response keys: {data.keys() if data else 'No data'}")  # 调试信息
-            return data
+            return response.json()
         else:
             print(f"Error: {response.status_code}")
-            print(f"Error response: {response.text}")  # 调试信息
             return None
-        
-    def handle_image_resource(self, query, width=720, height=1280, per_page=3, image_type='photo', orientation='vertical'):
+
+    def handle_image_resource(self, query, width=720, height=1280, per_page=1, image_type='photo', orientation='vertical'):
         """处理图片资源"""
         # query不超过100个字符
-        print(f"query: {query}")
         if len(query) > 100:
             query = query[:80]
+        query = quote_plus(query)
         image_data = self.search_images(query, width, height, per_page, image_type, orientation)
-        print(f"Image data: {image_data}")  # 调试信息
+        print(image_data)
 
         return_images = []
-        if image_data and 'hits' in image_data and len(image_data['hits']) > 0:
+        if image_data and 'hits' in image_data:
             for image in image_data['hits']:
-                # 尝试获取不同质量的图片URL，按照质量从高到低的顺序
-                image_url = (image.get('largeImageURL') or 
-                            image.get('webformatURL') or 
-                            image.get('previewURL') or
-                            image.get('imageURL'))
+                image_url = image.get('largeImageURL') or image.get('webformatURL') or image.get('previewURL')
                 if image_url:
-                    image_name = f"pixabay-image-{abs(hash(query)) % 10000}-{image.get('id', 0)}.jpg"
+                    image_name = f"pixabay-image-{hash(query)}-{image.get('id', 0)}.jpg"
                     save_name = os.path.join(workdir, image_name)
-                    print(f"Downloading image from: {image_url}")  # 调试信息
+                    print("download image")
                     download_image(image_url, save_name)
-                    if os.path.exists(save_name):  # 检查文件是否成功下载
-                        return_images.append(save_name)
-                    else:
-                        print(f"Failed to download image: {image_url}")  # 调试信息
+                    return_images.append(save_name)
         else:
-            print("No images found or no hits in response.")
-            if image_data:
-                print(f"Available keys in response: {image_data.keys()}")
-                if 'hits' in image_data:
-                    print(f"Number of hits: {len(image_data['hits'])}")
+            print("No images found.")
         return return_images

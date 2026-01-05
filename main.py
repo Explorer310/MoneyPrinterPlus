@@ -1,26 +1,3 @@
-#  Copyright © [2024] 程序那些事
-#
-#  All rights reserved. This software and associated documentation files (the "Software") are provided for personal and educational use only. Commercial use of the Software is strictly prohibited unless explicit permission is obtained from the author.
-#
-#  Permission is hereby granted to any person to use, copy, and modify the Software for non-commercial purposes, provided that the following conditions are met:
-#
-#  1. The original copyright notice and this permission notice must be included in all copies or substantial portions of the Software.
-#  2. Modifications, if any, must retain the original copyright information and must not imply that the modified version is an official version of the Software.
-#  3. Any distribution of the Software or its modifications must retain the original copyright notice and include this permission notice.
-#
-#  For commercial use, including but not limited to selling, distributing, or using the Software as part of any commercial product or service, you must obtain explicit authorization from the author.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
-#  Author: 程序那些事
-#  email: flydean@163.com
-#  Website: [www.flydean.com](http://www.flydean.com)
-#  GitHub: [https://github.com/ddean2009/MoneyPrinterPlus](https://github.com/ddean2009/MoneyPrinterPlus)
-#
-#  All rights reserved.
-#
-#
-
 import os
 
 import streamlit as st
@@ -435,3 +412,40 @@ def main_generate_ai_video_for_merge(video_generator):
 
             st.session_state["result_video_file"] = video_file
             status.update(label=tr("Generate Video completed!"), state="complete", expanded=False)
+
+def main_generate_images(image_generator):
+    with image_generator:
+        print("generate_images begin")
+        topic = get_must_session_option('video_subject', "请输入要生成的主题")
+        if topic is None:
+            return
+        
+        content = get_must_session_option('video_content', "请输入要生成的内容")
+        if content is None:
+            return
+
+        llm_provider = my_config['llm']['provider']
+        print("llm_provider:", llm_provider)
+        width = st.session_state.get("sd_width", 720)
+        height = st.session_state.get("sd_height", 1280)
+
+        # 使用LLM优化搜索关键词
+        llm_service = get_llm_provider(llm_provider)
+        print(f"Generated search keyword: {content}")
+        
+        # 使用Pixabay服务获取图片
+        image_results = llm_service.generate_and_save_image(content, width, height)
+        if image_results:
+            image_file = image_results[0]
+            st.session_state["generated_image"] = image_file
+            print("Image downloaded successfully")
+        else:
+            st.error("未找到匹配的图片，请尝试其他关键词")
+
+def get_must_session_option(key, error_message):
+    """获取会话状态中的选项，如果不存在则显示错误信息"""
+    value = st.session_state.get(key)
+    if value is None or value == "":
+        st.error(error_message)
+        return None
+    return value
