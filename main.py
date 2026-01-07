@@ -27,6 +27,7 @@ from services.video.merge_service import merge_get_video_list, VideoMergeService
 from services.video.video_service import get_audio_duration, VideoService, VideoMixService
 from tools.tr_utils import tr
 from tools.utils import random_with_system_time, get_must_session_option, extent_audio
+from services.llm.huoshan_service import MyVolcEngineService
 
 # 获取当前脚本的绝对路径
 script_path = os.path.abspath(__file__)
@@ -430,7 +431,8 @@ def main_generate_images(image_generator):
         height = st.session_state.get("sd_height", 1280)
 
         # 使用LLM优化搜索关键词
-        llm_service = get_llm_provider(llm_provider)
+        # llm_service = get_llm_provider(llm_provider)
+        llm_service = MyVolcEngineService()
         print(f"Generated search keyword: {content}")
         
         # 使用Pixabay服务获取图片
