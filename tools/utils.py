@@ -164,3 +164,22 @@ def extent_audio(audio_file, pad_dur=2):
     if os.path.exists(temp_file):
         os.remove(audio_file)
         os.renames(temp_file, audio_file)
+
+import socket
+
+def get_local_ip():
+    """
+    获取本机IP地址
+    """
+    try:
+        # 创建一个socket对象
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # 连接到一个远程地址（这里使用Google的DNS，但实际不会发送数据）
+        s.connect(("8.8.8.8", 80))
+        # 获取本机IP地址
+        local_ip = s.getsockname()[0]
+        s.close()
+        return local_ip
+    except Exception as e:
+        print(f"获取本机IP失败: {e}")
+        return "127.0.0.1"

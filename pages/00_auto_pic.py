@@ -12,8 +12,10 @@ from tools.tr_utils import tr
 from services.llm.llm_provider import get_llm_provider
 
 import os
-
+import shutil
+from datetime import datetime
 from tools.utils import get_file_map_from_dir
+
 
 # 获取当前脚本的绝对路径
 script_path = os.path.abspath(__file__)
@@ -105,6 +107,41 @@ with llm_container:
     
     st.selectbox(label=tr("Use pre-llm"), options=use_pre_llm_options,
                      format_func=lambda x: use_pre_llm_options.get(x), key="usePreLlm")
+    
+# 图片上传功能
+image_uploader = st.container(border=True)
+with image_uploader:
+    uploaded_file = st.file_uploader(tr("上传图片"), type=["png", "jpg", "jpeg"])
+    if uploaded_file is not None:
+        # 获取当前脚本路径
+        script_path = os.path.abspath(__file__)
+        script_dir = os.path.dirname(script_path)
+        
+        # 构建目标目录路径 (../../resource)
+        target_dir = os.path.abspath(os.path.join(script_dir, "../../resource"))
+        
+        # 确保目标目录存在
+        os.makedirs(target_dir, exist_ok=True)
+        
+        # 为上传的文件生成唯一名称，避免重复
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename, file_extension = os.path.splitext(uploaded_file.name)
+        new_filename = f"{filename}_{timestamp}{file_extension}"
+        target_path = os.path.join(target_dir, new_filename)
+        
+        # 将上传的文件保存到目标目录
+        with open(target_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        
+        # 显示上传的图片
+        st.image(uploaded_file, caption=tr("上传的图片"), use_column_width=True)
+        st.success(tr(f"图片已上传并保存到: {target_path}"))
+        
+        # 不要文件路径，只要文件名称，路径固定
+        st.session_state["upload_pic_name"] = new_filename
+
+    st.text_input(label="随机种子，作为确定扩散初始状态的基础，默认-1（随机）。若随机种子为相同正整数且其他参数均一致，则生成内容极大概率效果一致", key="Seed")
+    st.text_input(label="文本描述影响的程度，该值越大代表文本描述影响程度越大，且输入图片影响程度越小", key="Scale")
 
 # # 生成视频
 # video_generator = st.container(border=True)

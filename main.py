@@ -417,30 +417,14 @@ def main_generate_ai_video_for_merge(video_generator):
 def main_generate_images(image_generator):
     with image_generator:
         print("generate_images begin")
-        topic = get_must_session_option('video_subject', "请输入要生成的主题")
-        if topic is None:
-            return
-        
-        content = get_must_session_option('video_content', "请输入要生成的内容")
-        if content is None:
-            return
 
-        llm_provider = my_config['llm']['provider']
-        print("llm_provider:", llm_provider)
-        width = get_session_option("Width") or 1024
-        print("Width:", width)
-        height = get_session_option("Height") or 1024
-        print("Height:", height)
-        llmPre = get_session_option("usePreLlm")
-        print("usePreLlm:", llmPre)
 
-        # 使用LLM优化搜索关键词
+        # 不使用LLM优化搜索关键词
         # llm_service = get_llm_provider(llm_provider)
         llm_service = MyVolcEngineService()
-        print(f"Generated search keyword: {content}")
         
         # 使用大模型生成图片
-        image_results = llm_service.generate_and_save_image(content, width, height, llmPre)
+        image_results = llm_service.generate_and_save_image(image_generator)
         if image_results:
             image_file = image_results[0]
             st.session_state["generated_image"] = image_file
