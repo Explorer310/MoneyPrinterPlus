@@ -99,6 +99,12 @@ with llm_container:
     # print(st.session_state.get("video_content"))
     st.text_area(label=tr("Video content"), key="video_content", height=200)
     st.text_input(label=tr("Video content keyword"), key="video_keyword")
+    st.text_input(label=tr("Width"), key="Width")
+    st.text_input(label=tr("Height"), key="Height")
+    use_pre_llm_options = {"true": tr("True"), "false": tr("False")}
+    
+    st.selectbox(label=tr("Use pre-llm"), options=use_pre_llm_options,
+                     format_func=lambda x: use_pre_llm_options.get(x), key="usePreLlm")
 
 # # 生成视频
 # video_generator = st.container(border=True)

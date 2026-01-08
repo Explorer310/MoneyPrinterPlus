@@ -26,7 +26,7 @@ from services.sd.sd_service import SDService
 from services.video.merge_service import merge_get_video_list, VideoMergeService, merge_generate_subtitle
 from services.video.video_service import get_audio_duration, VideoService, VideoMixService
 from tools.tr_utils import tr
-from tools.utils import random_with_system_time, get_must_session_option, extent_audio
+from tools.utils import random_with_system_time, get_must_session_option, extent_audio, get_session_option
 from services.llm.huoshan_service import MyVolcEngineService
 
 # 获取当前脚本的绝对路径
@@ -427,16 +427,20 @@ def main_generate_images(image_generator):
 
         llm_provider = my_config['llm']['provider']
         print("llm_provider:", llm_provider)
-        width = st.session_state.get("sd_width", 720)
-        height = st.session_state.get("sd_height", 1280)
+        width = get_session_option("Width") or 1024
+        print("Width:", width)
+        height = get_session_option("Height") or 1024
+        print("Height:", height)
+        llmPre = get_session_option("usePreLlm")
+        print("usePreLlm:", llmPre)
 
         # 使用LLM优化搜索关键词
         # llm_service = get_llm_provider(llm_provider)
         llm_service = MyVolcEngineService()
         print(f"Generated search keyword: {content}")
         
-        # 使用Pixabay服务获取图片
-        image_results = llm_service.generate_and_save_image(content, width, height)
+        # 使用大模型生成图片
+        image_results = llm_service.generate_and_save_image(content, width, height, llmPre)
         if image_results:
             image_file = image_results[0]
             st.session_state["generated_image"] = image_file

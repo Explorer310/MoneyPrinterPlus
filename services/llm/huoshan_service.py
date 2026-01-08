@@ -49,7 +49,7 @@ class MyVolcEngineService(MyLLMService):
         # 火山引擎API不支持文本生成，这里只是继承父类方法
         raise NotImplementedError("火山引擎图像生成API不支持文本内容生成")
 
-    def generate_image_with_volcengine(self, prompt: str, width: int = 1024, height: int = 1024, n: int = 1):
+    def generate_image_with_volcengine(self, prompt: str, width: int = 1024, height: int = 1024, llmPre: bool = False, n: int = 1):
         """
         使用火山引擎即梦AI API生成图片
         :param prompt: 图片生成的提示词
@@ -74,12 +74,14 @@ class MyVolcEngineService(MyLLMService):
             form = {
                 "req_key": "jimeng_t2i_v31",  # 使用固定的模型名称
                 "prompt": prompt,  # 提示词
-                # "use_pre_llm": "false", #文本扩写
+                "use_pre_llm": llmPre, #文本扩写
                 "width": width,  # 图片宽度
                 "height": height,  # 图片高度
                 "n": n,  # 生成图片数量
                 "return_url": True  # 返回图片URL
             }
+
+            print(f"Request parameters: {form}")
 
             # 调用API生成图片
             resp = visual_service.cv_process(form)
@@ -119,7 +121,7 @@ class MyVolcEngineService(MyLLMService):
         image_prompt = llm_service.generate_content(topic, image_prompt_template)
         return image_prompt
 
-    def generate_and_save_image(self, topic: str, width: int = 1024, height: int = 1024, n: int = 1):
+    def generate_and_save_image(self, topic: str, width: int = 1024, height: int = 1024, llmPre: bool = False , n: int = 1):
         """
         从主题生成图片并保存到本地
         :param topic: 主题
@@ -133,11 +135,8 @@ class MyVolcEngineService(MyLLMService):
         image_prompt = topic
         print(f"Generated image prompt: {image_prompt}")
 
-        import sys
-        print(f"当前Python解释器路径：{sys.executable}")
-        
         # 使用火山引擎即梦AI生成图片
-        image_urls = self.generate_image_with_volcengine(image_prompt, width, height, n)
+        image_urls = self.generate_image_with_volcengine(image_prompt, width, height, llmPre, n)
         if not image_urls:
             print("Failed to generate image from VolcEngine Jimeng AI")
             return None
