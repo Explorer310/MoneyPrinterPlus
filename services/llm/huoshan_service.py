@@ -78,7 +78,7 @@ class MyVolcEngineService(MyLLMService):
 
             ip = "193.112.106.176"
             # 构建url
-            image_urls = f"{ip}:8502/{upload_pic_name}"
+            image_urls = f"http://{ip}:8502/{upload_pic_name}"
 
             # 构建请求参数
             form = {
