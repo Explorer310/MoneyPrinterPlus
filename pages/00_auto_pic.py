@@ -15,7 +15,6 @@ import os
 import shutil
 from datetime import datetime
 from tools.utils import get_file_map_from_dir
-import base64  
 
 
 # 获取当前脚本的绝对路径
@@ -134,16 +133,9 @@ with image_uploader:
         with open(target_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
         
-        # 将上传的文件转换为base64编码
-        uploaded_file.seek(0)  # 重置文件指针到开头
-        file_content = uploaded_file.read()
-        base64_encoded = base64.b64encode(file_content).decode('utf-8')
-        st.session_state["uploaded_image_base64"] = base64_encoded  # 存储到会话状态中
-        
         # 显示上传的图片
         st.image(uploaded_file, caption=tr("上传的图片"), use_column_width=True)
         st.success(tr(f"图片已上传并保存到: {target_path}"))
-        st.info(f"图片已转换为Base64编码，长度: {len(base64_encoded)} 字符")  # 显示base64信息
         
         # 不要文件路径，只要文件名称，路径固定
         st.session_state["upload_pic_name"] = new_filename

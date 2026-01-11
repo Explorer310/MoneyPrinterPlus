@@ -52,7 +52,7 @@ class MyVolcEngineService(MyLLMService):
         raise NotImplementedError("火山引擎图像生成API不支持文本内容生成")
     
     def generate_image_with_volcengine_from_image(self, prompt: str, width: int = 1024, height: int = 1024,seed: int = 0, 
-                                                  uploaded_image_base64: str = None, scale: float = 0.5):
+                                                  upload_pic_name: str = None, scale: float = 0.5):
         """
         使用火山引擎即梦AI API生成图片
         :param prompt: 图片生成的提示词
@@ -78,12 +78,12 @@ class MyVolcEngineService(MyLLMService):
 
             ip = "193.112.106.176"
             # 构建url
-            # image_urls = f"{ip}:8502/{upload_pic_name}"
+            image_urls = f"{ip}:8502/{upload_pic_name}"
 
             # 构建请求参数
             form = {
                 "req_key": "jimeng_i2i_v30",  # 使用固定的模型名称
-                "binary_data_base64": uploaded_image_base64,
+                "image_urls": [image_urls],
                 "prompt": prompt,  # 提示词
                 "seed": seed, # 随机种子
                 "scale": scale, # 文字影响程度
@@ -222,14 +222,14 @@ class MyVolcEngineService(MyLLMService):
             print("Seed:", seed)
             scale = get_session_option("Scale")
             print("Scale:", scale)
-            uploaded_image_base64 = get_session_option("uploaded_image_base64")
-            print("uploaded_image_base64:", uploaded_image_base64)
+            upload_pic_name = get_session_option("upload_pic_name")
+            print("upload_pic_name:", upload_pic_name)
 
             # 使用火山引擎即梦AI生成图片
-            if uploaded_image_base64 is None:
-                image_urls = self.generate_image_with_volcengine(image_prompt, width, height, llmPre)
+            if upload_pic_name is None:
+                image_urls = self.generate_image_with_volcengine(image_prompt, width, height, llmPre, n)
             else:
-                image_urls = self.generate_image_with_volcengine_from_image(image_prompt, width, height, seed, uploaded_image_base64, scale)
+                image_urls = self.generate_image_with_volcengine_from_image(image_prompt, width, height, seed, upload_pic_name, scale)
             
             
             if not image_urls:
