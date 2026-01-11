@@ -51,7 +51,7 @@ class MyVolcEngineService(MyLLMService):
         # 火山引擎API不支持文本生成，这里只是继承父类方法
         raise NotImplementedError("火山引擎图像生成API不支持文本内容生成")
     
-    def generate_image_with_volcengine_from_image(self, prompt: str, width: int = 1024, height: int = 1024,seed: int = 0, 
+    def generate_image_with_volcengine_from_image(self, prompt: str, width: int = 1024, height: int = 1024,seed: int = -1, 
                                                   upload_pic_name: str = None, scale: float = 0.5):
         """
         使用火山引擎即梦AI API生成图片
@@ -79,6 +79,12 @@ class MyVolcEngineService(MyLLMService):
             ip = "193.112.106.176"
             # 构建url
             image_urls = f"http://{ip}:8502/{upload_pic_name}"
+
+            # 处理可能为 None 或空值的参数
+            if seed is None or seed == "" or seed == -1:
+                seed = -1  # 使用默认值
+            if scale is None or scale == "":
+                scale = 0.5  # 使用默认值
 
             # 构建请求参数
             form = {
@@ -227,7 +233,7 @@ class MyVolcEngineService(MyLLMService):
 
             # 使用火山引擎即梦AI生成图片
             if upload_pic_name is None:
-                image_urls = self.generate_image_with_volcengine(image_prompt, width, height, llmPre, n)
+                image_urls = self.generate_image_with_volcengine(image_prompt, width, height, llmPre)
             else:
                 image_urls = self.generate_image_with_volcengine_from_image(image_prompt, width, height, seed, upload_pic_name, scale)
             
