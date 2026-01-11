@@ -118,7 +118,7 @@ with image_uploader:
         script_dir = os.path.dirname(script_path)
         
         # 构建目标目录路径 (../../resource)
-        target_dir = os.path.abspath(os.path.join(script_dir, "../../resource"))
+        target_dir = os.path.abspath(os.path.join(script_dir, "../resource"))
         
         # 确保目标目录存在
         os.makedirs(target_dir, exist_ok=True)

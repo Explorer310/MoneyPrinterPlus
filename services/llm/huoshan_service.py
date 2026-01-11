@@ -73,7 +73,10 @@ class MyVolcEngineService(MyLLMService):
             visual_service.set_ak(self.VOLCENGINE_ACCESS_KEY)   # 设置AK
             visual_service.set_sk(self.VOLCENGINE_SECRET_KEY)   # 设置SK
 
-            ip = utils.get_local_ip()
+            # 暂时用固定地址
+            # ip = utils.get_local_ip()
+
+            ip = "193.112.106.176"
             # 构建url
             image_urls = f"{ip}:8502/{upload_pic_name}"
 
