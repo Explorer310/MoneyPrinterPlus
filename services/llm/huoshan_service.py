@@ -83,7 +83,7 @@ class MyVolcEngineService(MyLLMService):
             # 构建请求参数
             form = {
                 "req_key": "jimeng_i2i_v30",  # 使用固定的模型名称
-                "image_urls": uploaded_image_base64,
+                "binary_data_base64": uploaded_image_base64,
                 "prompt": prompt,  # 提示词
                 "seed": seed, # 随机种子
                 "scale": scale, # 文字影响程度
